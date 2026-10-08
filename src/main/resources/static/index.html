@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>晋城小店 · 商家工作台</title>
+  <link rel="stylesheet" href="/app.css?v=5" />
+</head>
+<body>
+  <aside class="sider">
+    <div class="brand">
+      <span class="mark">店</span>
+      <div>
+        <strong>晋城小店</strong>
+        <small>商家工作台</small>
+      </div>
+    </div>
+    <nav>
+      <button type="button" data-tab="search" class="on">
+        <span>搜索与广告</span>
+        <small>BM25 · eCPM</small>
+      </button>
+      <button type="button" data-tab="reco">
+        <span>顾客推荐</span>
+        <small>一起买过</small>
+      </button>
+      <button type="button" data-tab="erp">
+        <span>进销存</span>
+        <small>库存 · 流水</small>
+      </button>
+      <button type="button" data-tab="media">
+        <span>音视频</span>
+        <small>WAV · FFmpeg</small>
+      </button>
+    </nav>
+    <button id="reset" type="button">恢复样本数据</button>
+  </aside>
+
+  <div class="workspace">
+    <section id="search">
+      <header class="page-head">
+        <div>
+          <p class="kicker">搜索 / 广告</p>
+          <h1>顾客搜什么，就排什么</h1>
+          <p>自然结果用 BM25。顶部广告位用出价乘预估点击率，不是谁钱多谁第一。</p>
+        </div>
+      </header>
+      <form id="search-form" class="searchbar">
+        <input id="q" placeholder="试试：蜂蜜、醋、围巾、党参" autocomplete="off" />
+        <select id="category"><option value="">全部类目</option></select>
+        <button type="submit">搜索</button>
+      </form>
+      <div class="chips" id="chips">
+        <button type="button" data-q="蜂蜜">蜂蜜</button>
+        <button type="button" data-q="醋">醋</button>
+        <button type="button" data-q="围巾">围巾</button>
+        <button type="button" data-q="党参">党参</button>
+      </div>
+      <div class="split">
+        <div>
+          <h2>搜索结果</h2>
+          <div id="results" class="stack"></div>
+          <h2>这次查询的竞价</h2>
+          <div id="auction" class="stack"></div>
+        </div>
+        <div>
+          <h2>广告计划</h2>
+          <div id="ads" class="stack"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="reco" hidden>
+      <header class="page-head">
+        <div>
+          <p class="kicker">推荐</p>
+          <h1>看这个顾客还可能买什么</h1>
+          <p>李强和王敏都买过醋。王敏还买了蜂蜜，所以给李强推蜂蜜。</p>
+        </div>
+        <div class="user-pick">
+          <label>当前顾客
+            <select id="user"></select>
+          </label>
+          <div class="actions">
+            <button type="button" id="mode-cf" class="primary">一起买过</button>
+            <button type="button" id="mode-content">同一类目</button>
+          </div>
+        </div>
+      </header>
+      <p id="reco-note" class="note">协同过滤：看买过同样东西的人还买了什么。换到「同一类目」就不看别人，只看商品自己像不像。</p>
+      <div id="reco-list" class="card-grid"></div>
+    </section>
+
+    <section id="erp" hidden>
+      <header class="page-head">
+        <div>
+          <p class="kicker">进销存</p>
+          <h1>库存和流水分开记</h1>
+          <p>泽州铁器只有 2 件。卖出 3 件会被拒绝，入库之后预警会消失。</p>
+        </div>
+        <div id="stats" class="stats"></div>
+      </header>
+      <div id="alerts"></div>
+      <form id="product-form" class="panel product-form">
+        <strong>新品建档</strong>
+        <input id="new-name" placeholder="商品名，如山楂条" required />
+        <input id="new-category" placeholder="类目" value="食品" required />
+        <input id="new-price" type="number" min="0.01" step="0.01" value="15" placeholder="售价" />
+        <input id="new-cost" type="number" min="0" step="0.01" value="6" placeholder="成本" />
+        <input id="new-stock" type="number" min="0" value="20" />
+        <button class="primary" type="submit">建档并入库</button>
+      </form>
+      <div class="split">
+        <div class="panel">
+          <table>
+            <thead>
+              <tr><th>商品</th><th>类目</th><th>单价</th><th>库存</th><th></th></tr>
+            </thead>
+            <tbody id="stock-body"></tbody>
+          </table>
+        </div>
+        <div>
+          <h2>最近流水</h2>
+          <div id="logs" class="stack"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="media" hidden>
+      <header class="page-head">
+        <div>
+          <p class="kicker">音视频</p>
+          <h1>先听一条处理过的声音</h1>
+          <p>这里处理 16-bit 单声道 WAV。视频转码不在 Java 里硬解，命令交给 FFmpeg。</p>
+        </div>
+      </header>
+      <div class="panel studio">
+        <div class="controls">
+          <label>频率 Hz <input id="freq" type="number" value="440" min="80" max="2000" /></label>
+          <label>时长 秒 <input id="seconds" type="number" value="1" min="0.2" max="5" step="0.1" /></label>
+          <label>振幅 <input id="amp" type="number" value="0.5" min="0.1" max="1" step="0.1" /></label>
+        </div>
+        <div class="actions">
+          <button id="make-tone" class="primary" type="button">生成试听</button>
+          <button id="make-gain" type="button">音量减半</button>
+          <button id="make-fade" type="button">淡入淡出</button>
+          <button id="make-trim" type="button">裁到 0.4 秒</button>
+          <button id="make-mix" type="button">叠一层低音</button>
+        </div>
+        <canvas id="wave" width="880" height="120"></canvas>
+        <audio id="player" controls></audio>
+        <div id="meters" class="meters"></div>
+      </div>
+      <h2>视频命令</h2>
+      <div id="recipes" class="card-grid"></div>
+    </section>
+  </div>
+  <div id="toast" role="status"></div>
+  <script src="/app.js?v=4"></script>
+</body>
+</html>
